@@ -7,7 +7,6 @@ namespace Treasure.Data.Entities;
 public partial class ProblemData
 {
     public int Id { get; set; }
-    [JsonIgnore]
     public int ProblemId { get; set; }
 
     public int Row { get; set; }
@@ -15,8 +14,6 @@ public partial class ProblemData
     public int Col { get; set; }
 
     public int? ChestTypes { get; set; }
-    [JsonIgnore]
     public byte[] Matrix { get; set; } = null!;
-    [JsonIgnore]
     public virtual Problem Problem { get; set; } = null!;
 }

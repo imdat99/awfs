@@ -2,12 +2,16 @@
 
 namespace Treasure.Models
 {
-    public class ProblemDTO : ProblemData
+    public class ProblemDTO
     {
         public new int Id { get; set; }
         public required string Title { get; set; }
         public decimal? Result { get; set; } = null;
-        public bool? IsResolved { get; set; }
+        public int Row { get; set; }
+
+        public int Col { get; set; }
+
+        public int? ChestTypes { get; set; }
         public new required List<List<int>> Matrix { get; set; }
     }
     public class ProblemPagingDTO

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Treasure.Data.Entities;
+using Treasure.Extentions;
 using Treasure.Service;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +18,10 @@ builder.Services.AddDbContextPool<TreasureContext>(
         .EnableSensitiveDataLogging()
         .EnableDetailedErrors());
 
-builder.Services.AddControllers();
+builder.Services.AddControllers((o) =>
+{
+    o.Filters.Add<GlobalExceptionFilter>();
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
