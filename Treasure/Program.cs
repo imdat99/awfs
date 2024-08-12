@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Treasure.Data.Entities;
+using Treasure.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddSimpleConsole(options =>
@@ -20,6 +21,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddTransient<ITreasureService, TreasureService>();
 
 var app = builder.Build();
 

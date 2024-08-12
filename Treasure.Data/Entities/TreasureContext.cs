@@ -22,10 +22,6 @@ public partial class TreasureContext : DbContext
 
     public virtual DbSet<ProblemResult> ProblemResults { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=139.59.233.184;port=3306;database=awing_test;user=root;password=password;treattinyasboolean=true;charset=utf8bm4", Microsoft.EntityFrameworkCore.ServerVersion.Parse("5.7.44-mysql"));
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -61,7 +57,7 @@ public partial class TreasureContext : DbContext
 
             entity.ToTable("problem_data");
 
-            entity.HasIndex(e => e.ProblemId, "problem_id");
+            entity.HasIndex(e => e.ProblemId, "problem_id").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
@@ -83,8 +79,8 @@ public partial class TreasureContext : DbContext
                 .HasColumnType("int(11)")
                 .HasColumnName("row");
 
-            entity.HasOne(d => d.Problem).WithMany(p => p.ProblemData)
-                .HasForeignKey(d => d.ProblemId)
+            entity.HasOne(d => d.Problem).WithOne(p => p.ProblemData)
+                .HasForeignKey<ProblemData>(d => d.ProblemId)
                 .HasConstraintName("problem_data_ibfk_1");
         });
 
@@ -94,11 +90,12 @@ public partial class TreasureContext : DbContext
 
             entity.ToTable("problem_result");
 
-            entity.HasIndex(e => e.ProblemId, "problem_id");
+            entity.HasIndex(e => e.ProblemId, "problem_id").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
                 .HasColumnName("id");
+            entity.Property(e => e.IsResolved).HasColumnName("is_resolved");
             entity.Property(e => e.ProblemId)
                 .HasColumnType("int(11)")
                 .HasColumnName("problem_id");
@@ -106,8 +103,8 @@ public partial class TreasureContext : DbContext
                 .HasPrecision(10, 6)
                 .HasColumnName("result");
 
-            entity.HasOne(d => d.Problem).WithMany(p => p.ProblemResults)
-                .HasForeignKey(d => d.ProblemId)
+            entity.HasOne(d => d.Problem).WithOne(p => p.ProblemResult)
+                .HasForeignKey<ProblemResult>(d => d.ProblemId)
                 .HasConstraintName("problem_result_ibfk_1");
         });
 

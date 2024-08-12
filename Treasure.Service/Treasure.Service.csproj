@@ -4,12 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <defaultNamespace>Treasure.Service</defaultNamespace>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Interfaces\" />
-    <Folder Include="Implements\" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Treasure.Data\Treasure.Data.csproj" />
