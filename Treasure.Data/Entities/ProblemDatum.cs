@@ -15,7 +15,7 @@ public partial class ProblemData
     public int Col { get; set; }
 
     public int? ChestTypes { get; set; }
-
+    [JsonIgnore]
     public byte[] Matrix { get; set; } = null!;
     [JsonIgnore]
     public virtual Problem Problem { get; set; } = null!;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace Treasure.Data.Entities;
 
@@ -13,8 +12,8 @@ public partial class Problem
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
-    [JsonIgnore]
-    public virtual ICollection<ProblemData> ProblemData { get; set; } = new List<ProblemData>();
-    [JsonIgnore]
-    public virtual ICollection<ProblemResult> ProblemResults { get; set; } = new List<ProblemResult>();
+
+    public virtual ProblemData? ProblemData { get; set; }
+
+    public virtual ProblemResult? ProblemResult { get; set; }
 }
