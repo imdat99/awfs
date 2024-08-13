@@ -10,6 +10,7 @@ builder.Logging.AddSimpleConsole(options =>
     options.SingleLine = true;
     options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
 });
+
 // Add services to the container.
 var connectionString = builder.Configuration.GetSection("ConnectionStrings:DefaultConnection").Value;
 builder.Services.AddDbContextPool<TreasureContext>(
@@ -17,17 +18,27 @@ builder.Services.AddDbContextPool<TreasureContext>(
         .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
         .EnableSensitiveDataLogging()
         .EnableDetailedErrors());
-
+builder.Services.AddCors(o =>
+{
+    o.AddPolicy("AllowAllOrigins", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 builder.Services.AddControllers((o) =>
 {
     o.Filters.Add<GlobalExceptionFilter>();
 });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<ITreasureService, TreasureService>();
 
 var app = builder.Build();
+app.UseCors("AllowAllOrigins");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -35,7 +46,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseAuthorization();
 
 app.MapControllers();

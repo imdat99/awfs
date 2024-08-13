@@ -33,8 +33,7 @@ public class TreasureService(ILogger<TreasureService> logger, TreasureContext co
                 Result = p.ProblemResult.Result
             })
             .Skip((request.Page - 1) * request.PageSize)
-            .Take(request.PageSize)
-            .ToList();
+            .Take(request.PageSize);
         var totalCount = _context.Problems.Count(condition);
         return new ProblemPagingResponseDTO
         {
