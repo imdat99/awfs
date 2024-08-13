@@ -5,30 +5,44 @@ using System.Text;
 using Treasure.Data.Entities;
 using Treasure.Models;
 using Treasure.Service.Implements;
+using Treasure.Service.Utils;
 
 namespace Treasure.Service;
 public class TreasureService(ILogger<TreasureService> logger, TreasureContext context) : ITreasureService
 {
     private readonly ILogger<TreasureService> _logger = logger;
     private readonly TreasureContext _context = context;
-    public ProblemPagingResponseDTO GetPaging(ProblemQueryDTO request)
+    public async Task<ProblemPagingResponseDTO> GetPaging(ProblemQueryDTO request)
     {
-        using var dbTransaction = _context.Database.BeginTransaction();
-        try
-        {
-            Expression<Func<Problem, bool>> condition = x => true;
+        Expression<Func<Problem, bool>> condition = x => true;
 
-            if (!string.IsNullOrEmpty(request.Title))
-            {
-                condition = condition.And(x => x.Title.Contains(request.Title));
-            }
-        }
-        catch (Exception ex)
+        if (!string.IsNullOrEmpty(request.Title))
         {
-            _logger.LogError(ex, "Error getting problems");
-            dbTransaction.Rollback();
+            condition = condition.AndAlso(x => x.Title.Contains(request.Title));
         }
-        return new ProblemPagingResponseDTO();
+        if (request.IsSolved != null)
+        {
+            condition = condition.AndAlso(x => (bool)request.IsSolved ? x.ProblemResult.Result != null : x.ProblemResult.Result == null);
+        }
+        var result = _context.Problems
+            .Where(condition)
+            .Select(p => new ProblemPagingDTO
+            {
+                Id = p.Id,
+                Title = p.Title,
+                Result = p.ProblemResult.Result
+            })
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToList();
+        var totalCount = _context.Problems.Count(condition);
+        return new ProblemPagingResponseDTO
+        {
+            Items = result,
+            TotalCount = totalCount,
+            CurrentPage = request.Page,
+            TotalPage = (int)Math.Ceiling((double)totalCount / request.PageSize)
+        };
     }
 
     public ProblemDTO GetProblemById(int id)
@@ -65,6 +79,12 @@ public class TreasureService(ILogger<TreasureService> logger, TreasureContext co
             };
             _context.ProblemData.Add(problemData);
             await _context.SaveChangesAsync();
+            if (isResolveNow)
+            {
+                var result = TreasureResolve.Solve(problemModel.Row, problemModel.Col, (int)problemModel.ChestTypes, problemModel.Matrix);
+                _context.ProblemResults.Add(new ProblemResult { ProblemId = problem.Id, Result = (decimal)result });
+                await _context.SaveChangesAsync();
+            }
             dbTransaction.Commit();
             return true;
         }
@@ -125,8 +145,9 @@ public class TreasureService(ILogger<TreasureService> logger, TreasureContext co
             problemData.ChestTypes = problemModel.ChestTypes;
             problemData.Matrix = Encoding.UTF8.GetBytes(matrixData);
             _context.ProblemData.Update(problemData);
-
-            _context.ProblemResults.Remove(problem.ProblemResult);
+            if (problem.ProblemResult != null) { 
+                _context.ProblemResults.Remove(problem.ProblemResult); 
+            }
             await _context.SaveChangesAsync();
             dbTransaction.Commit();
             return true;

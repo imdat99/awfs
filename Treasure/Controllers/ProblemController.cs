@@ -12,7 +12,7 @@ namespace Treasure.Controllers
         private readonly ITreasureService _treasureService = treasureService;
 
         [HttpGet(Name = "GetProblem")]
-        public ProblemPagingResponseDTO Get([FromQuery] ProblemQueryDTO parms)
+        public Task<ProblemPagingResponseDTO> Get([FromQuery] ProblemQueryDTO parms)
         {
             return _treasureService.GetPaging(parms);
         }
