@@ -46,10 +46,10 @@ namespace Treasure.Test
         }
         [Theory]
         [ClassData(typeof(PagingTestData))]
-        public async Task GetPaging_ShouldReturnCorrectResult(string title, bool isSolve, int expectedTotalCount, int expectedTotalPage)
+        public void GetPaging_ShouldReturnCorrectResult(string title, bool isSolve, int expectedTotalCount, int expectedTotalPage)
         {
             var service = GetService();
-            var result = await service.GetPaging(new ProblemQueryDTO{ Title = title, IsSolved = isSolve });
+            var result = service.GetPaging(new ProblemQueryDTO{ Title = title, IsSolved = isSolve });
             Assert.Equal(expectedTotalCount, result.TotalCount);
             Assert.Equal(expectedTotalPage, result.TotalPage);
         }
@@ -92,28 +92,28 @@ namespace Treasure.Test
         public void AddProblem_Ok()
         {
             var service = GetService();
-            var result = Task.Run(() => service.AddProblem(new ProblemDTO{ Id = 112233, Title = "ahihi", Matrix = new List<List<int>>{ new List<int>{1,2,3}, new List<int>{1,2,3} }, Row = 2, Col = 3, ChestTypes = 2 }, true));
+            var result = Task.Run(() => service.AddProblem(new ProblemDTO{ Id = 112233, Title = "ahihi", Matrix = [[1,2,3], [1,2,3]], Row = 2, Col = 3, ChestTypes = 2 }, true));
             Assert.True(result.Result);
         }[Fact]
         public void AddProblem_Fail()
         {
             var service = GetService();
-            var result = Task.Run(() => service.AddProblem(new ProblemDTO{ Id = 112233, Title = "ahihi", Matrix = new List<List<int>>{ new List<int>{1,2,3}, new List<int>{1,2,3} }, Row = 2, Col = 1000, ChestTypes = 2 }, true));
+            var result = Task.Run(() => service.AddProblem(new ProblemDTO{ Id = 112233, Title = "ahihi", Matrix = [[1,2,3], [1,2,3]], Row = 2, Col = 1000, ChestTypes = 2 }, true));
             Assert.True(result.Result == false);
         }
         [Fact]
         public void UpdateProblem_Ok() 
         {
             var service = GetService();
-            var result = Task.Run(() => service.UpdateProblem(112233, new ProblemDTO{ Id = 112233, Title = "ahihi", Matrix = new List<List<int>>{ new List<int>{1,2,3}, new List<int>{1,2,3} }, Row = 2, Col = 3, ChestTypes = 2 }));
+            var result = Task.Run(() => service.UpdateProblem(112233, new ProblemDTO{ Id = 112233, Title = "ahihi", Matrix = [[1,2,3], [1,2,3]], Row = 2, Col = 3, ChestTypes = 2 }));
             Assert.True(result.Result);
         }
         [Fact]
         public void UpdateProblem_Fail()
         {
             var service = GetService();
-            var result = Task.Run(() => service.UpdateProblem(1122343, new ProblemDTO { Id = 112233, Title = "ahihi", Matrix = new List<List<int>> { new List<int> { 1, 2, 3 }, new List<int> { 1, 2, 3 } }, Row = 1000, Col = 1000, ChestTypes = 2 }));
-            Assert.True(result.Result == false);
+            var result = Task.Run(() => service.UpdateProblem(1122343, new ProblemDTO { Id = 112233, Title = "ahihi", Matrix = [[1, 2, 3], [1, 2, 3]], Row = 1000, Col = 1000, ChestTypes = 2 }));
+            Assert.False(result.Result);
         }
 
     }

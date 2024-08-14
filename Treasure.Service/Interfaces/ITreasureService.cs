@@ -5,7 +5,7 @@ namespace Treasure.Service;
 
 public interface ITreasureService
 {
-    Task<ProblemPagingResponseDTO> GetPaging(ProblemQueryDTO queryDTO);
+    ProblemPagingResponseDTO GetPaging(ProblemQueryDTO queryDTO);
     ProblemDTO GetProblemById(int id);
     Task<Boolean> AddProblem(ProblemDTO problemModel, Boolean isResolveNow);
     Task<double> ResolveProblem(int id);

@@ -12,7 +12,7 @@ public class TreasureService(ILogger<TreasureService> logger, TreasureContext co
 {
     private readonly ILogger<TreasureService> _logger = logger;
     private readonly TreasureContext _context = context;
-    public async Task<ProblemPagingResponseDTO> GetPaging(ProblemQueryDTO request)
+    public ProblemPagingResponseDTO GetPaging(ProblemQueryDTO request)
     {
         Expression<Func<Problem, bool>> condition = x => true;
 
@@ -97,9 +97,14 @@ public class TreasureService(ILogger<TreasureService> logger, TreasureContext co
     public async Task<double> ResolveProblem(int id)
     {
         var problemData = _context.ProblemData.FirstOrDefault(p => p.ProblemId == id);
+        var oldResult = _context.ProblemResults.FirstOrDefault(p => p.ProblemId == id);
         if (problemData == null)
         {
             throw new Exception("Notfound");
+        }
+        if(oldResult != null)
+        {
+            _context.Remove(oldResult);
         }
         var matrixData = JsonConvert.DeserializeObject<List<List<int>>>(Encoding.UTF8.GetString(problemData.Matrix));
         var result = TreasureResolve.Solve(problemData.Row, problemData.Col, (int)problemData.ChestTypes, matrixData);
