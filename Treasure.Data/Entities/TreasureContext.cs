@@ -88,20 +88,16 @@ public partial class TreasureContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("problem_result");
+            entity
+                .ToTable("problem_result")
+                .UseCollation("utf8mb4_0900_ai_ci");
 
             entity.HasIndex(e => e.ProblemId, "problem_id").IsUnique();
 
-            entity.Property(e => e.Id)
-                .HasColumnType("int(11)")
-                .HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.IsResolved).HasColumnName("is_resolved");
-            entity.Property(e => e.ProblemId)
-                .HasColumnType("int(11)")
-                .HasColumnName("problem_id");
-            entity.Property(e => e.Result)
-                .HasPrecision(10, 6)
-                .HasColumnName("result");
+            entity.Property(e => e.ProblemId).HasColumnName("problem_id");
+            entity.Property(e => e.Result).HasColumnName("result");
 
             entity.HasOne(d => d.Problem).WithOne(p => p.ProblemResult)
                 .HasForeignKey<ProblemResult>(d => d.ProblemId)

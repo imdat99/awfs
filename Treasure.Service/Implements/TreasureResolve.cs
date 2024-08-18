@@ -4,30 +4,32 @@ namespace Treasure.Service.Implements
 {
     internal static class TreasureResolve
     {
-        private readonly static int maxn = 500;
+        private readonly static int maxn = 500+1;
         private readonly static ulong maxc = ulong.MaxValue;
-    
+
         private static double Dis(Pii u, Pii v) => u.Item1 == 0 && u.Item2 == 0 ?
             Math.Sqrt((v.Item1 - 1) * (v.Item1 - 1) + (v.Item2 - 1) * (v.Item2 - 1)) :
             Math.Sqrt((u.Item1 - v.Item1) * (u.Item1 - v.Item1) + (u.Item2 - v.Item2) * (u.Item2 - v.Item2));
+
         public static double Solve(int n, int m, int p, List<List<int>> matrix)
         {
-            int[,] arr2d = new int[maxn, maxn];
+            int[,] arr2d = new int[maxn+1, maxn+1];
             double[] ans = new double[maxn];
             double[,] min_dis = new double[maxn, maxn];
-            List<Pii>[] b = new List<Pii>[maxn];
+            List<Pii>[] b = new List<Pii>[n*m+1];
 
-            for (int i = 0; i < maxn; i++) b[i] = new List<Pii>();
+            for (int i = 0; i < n * m + 1; i++) b[i] = new List<Pii>();
             for (int i = 0; i < matrix.Count; i++)
             {
                 for (int j = 0; j < matrix[i].Count; j++)
                 {
-                    arr2d[i+1, j+1] = matrix[i][j];
-                    b[arr2d[i+1, j+1]].Add((i+1, j+1));
+                        var init = matrix[i][j];
+                        arr2d[i + 1, j + 1] = init;
+                        b[init].Add((i + 1, j + 1));
                 }
             }
 
-            
+
             for (int i = 0; i <= p; i++)
                 ans[i] = maxc;
 
@@ -41,8 +43,11 @@ namespace Treasure.Service.Implements
             var q = new PriorityQueue<Pii, double>();
             q.Enqueue((0, 0), 0);
 
+            int iterationCount = 0;
+
             while (q.TryDequeue(out var top, out var priority))
             {
+                iterationCount++;
                 double distance = -priority;
                 var u = top;
                 int key_num = arr2d[(int)u.Item1, (int)u.Item2];
@@ -57,10 +62,16 @@ namespace Treasure.Service.Implements
                     double new_dis = distance + Dis(u, v);
                     q.Enqueue(v, -new_dis);
                 }
+
+                if (iterationCount > 1000000) 
+                {
+                    Console.WriteLine("Possible infinite loop detected. Exiting...");
+                    break;
+                }
             }
 
             return ans[p];
         }
-        
+
     }
 }
