@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Linq.Expressions;
@@ -81,7 +82,7 @@ public class TreasureService(ILogger<TreasureService> logger, TreasureContext co
             if (isResolveNow)
             {
                 var result = TreasureResolve.Solve(problemModel.Row, problemModel.Col, (int)problemModel.ChestTypes, problemModel.Matrix);
-                _context.ProblemResults.Add(new ProblemResult { ProblemId = problem.Id, Result = (decimal)result });
+                _context.ProblemResults.Add(new ProblemResult { ProblemId = problem.Id, Result = (double)result });
                 await _context.SaveChangesAsync();
             }
             dbTransaction.Commit();
@@ -108,7 +109,7 @@ public class TreasureService(ILogger<TreasureService> logger, TreasureContext co
         }
         var matrixData = JsonConvert.DeserializeObject<List<List<int>>>(Encoding.UTF8.GetString(problemData.Matrix));
         var result = TreasureResolve.Solve(problemData.Row, problemData.Col, (int)problemData.ChestTypes, matrixData);
-        _context.ProblemResults.Add(new ProblemResult { ProblemId = id, Result = (decimal)result });
+        _context.ProblemResults.Add(new ProblemResult { ProblemId = id, Result = (double)result });
         await _context.SaveChangesAsync();
         return result;
     }
@@ -149,9 +150,7 @@ public class TreasureService(ILogger<TreasureService> logger, TreasureContext co
             problemData.ChestTypes = problemModel.ChestTypes;
             problemData.Matrix = Encoding.UTF8.GetBytes(matrixData);
             _context.ProblemData.Update(problemData);
-            if (problem.ProblemResult != null) { 
-                _context.ProblemResults.Remove(problem.ProblemResult); 
-            }
+            await _context.ProblemResults.Where(p => p.ProblemId == id).ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
             dbTransaction.Commit();
             return true;

@@ -12,7 +12,7 @@ CREATE TABLE awing_test.problem_data (
   row int NOT NULL,
   col int NOT NULL,
   chestTypes int DEFAULT 0,
-  matrix BLOB NOT NULL,
+  matrix MEDIUMBLOB NOT NULL,
   PRIMARY KEY (id),
   CHECK (row <= 500),
   CHECK (col <= 500),

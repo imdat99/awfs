@@ -11,7 +11,7 @@ public partial class ProblemResult
 
     public bool IsResolved { get; set; }
 
-    public decimal? Result { get; set; }
+    public double? Result { get; set; }
 
     public virtual Problem Problem { get; set; } = null!;
 }

@@ -6,7 +6,7 @@ namespace Treasure.Models
     {
         public new int Id { get; set; }
         public required string Title { get; set; }
-        public decimal? Result { get; set; } = null;
+        public double? Result { get; set; } = null;
         public int Row { get; set; }
 
         public int Col { get; set; }
@@ -18,7 +18,7 @@ namespace Treasure.Models
     {
         public int Id { get; set; }
         public required string Title { get; set; }
-        public decimal? Result { get; set; } = null;
+        public double? Result { get; set; } = null;
     }
     public class ProblemQueryDTO
     {
